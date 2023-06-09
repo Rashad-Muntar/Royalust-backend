@@ -1,6 +1,8 @@
 import User  from "../models/userSchema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import generateTokens from "../utils/generateTokens";
 import passport from "passport";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -20,7 +22,10 @@ interface LoginProps {
 const register = async ({username, email, password}:RegisterProps)  => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({username, email, password: hashedPassword});
+        const refreshToken = crypto.randomBytes(64).toString('hex');
+        const user = new User({username, email, password: hashedPassword, refreshToken});
+        user.save()
+        generateTokens.generateAccessToken(user.id);
         user.save()
         return "Registered successfully";
       } catch (e:any) {
@@ -36,17 +41,10 @@ const login = async ({email, password}:LoginProps)  => {
             return "User not found"
           }
           const passwordMatch = user.password ? bcrypt.compare(password, user.password) : false;
-       
           if (!passwordMatch) {
             return  "Invalid username or password"
           }
-          const token = jwt.sign(
-            { id: user.id },
-            SECRET,
-            {
-              expiresIn: "1h",
-            }
-          );
+          const token = generateTokens.generateAccessToken(user.id);
             return {user, token}
       } catch (e:any) {
         console.log(e.message);
