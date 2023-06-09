@@ -29,8 +29,6 @@ const register = async ({username, email, password}:RegisterProps)  => {
       }  
 }
 
-
-
 const login = async ({email, password}:LoginProps)  => {
     try {
         const user = await User.findOne({email: email})
@@ -43,7 +41,7 @@ const login = async ({email, password}:LoginProps)  => {
             return  "Invalid username or password"
           }
           const token = jwt.sign(
-            { username: user.username },
+            { id: user.id },
             SECRET,
             {
               expiresIn: "1h",
