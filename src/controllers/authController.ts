@@ -8,4 +8,10 @@ const register = (req: Request, res: Response) => {
     .json({ message: userMsg});
 }
 
-export default { register }
+const login = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+    const userMsg = await authServices.login({email, password})
+    res.json({ message: "Logged in successfully", data: userMsg });
+}
+
+export default { register, login }
