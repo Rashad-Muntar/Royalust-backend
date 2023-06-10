@@ -58,6 +58,7 @@ const login = async ({email, password}:LoginProps)  => {
 }
 
 const refresh = async({refreshToken}:any) => {
+  let accessToken;
   try {
       const user =  await User.findOne({refreshToken});
       if (!user) {
@@ -65,15 +66,25 @@ const refresh = async({refreshToken}:any) => {
       }
       jwt.verify(refreshToken, REFRESH_SECRET, (err:any, user:any) => {
         if (!err) {
-            const accessToken = generateTokens.generateAccessToken(user.id);
-            return accessToken;
+            accessToken = generateTokens.generateAccessToken(user.id);
+            
         } else {
             return "Invalid refresh token"  
         }
     });
+    return accessToken;
   } catch (error:any) {
       return error.message;
   }
 }
 
-export default { register, login, refresh }
+const logout = async({refreshToken}:any) => {
+  const user = await User.findOne({refreshToken});
+  if (!user) {
+    return "Invalid refresh token";
+  }
+  await User.findByIdAndUpdate(user.id, {refreshToken: null})
+  return "User logged out successfully"
+}
+
+export default { register, login, refresh, logout }

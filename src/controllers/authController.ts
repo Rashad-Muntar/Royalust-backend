@@ -16,9 +16,14 @@ const login = async (req: Request, res: Response) => {
 const refresh = async (req: Request, res: Response) => {
     const { refreshToken } = req.body;
     const userMsg = await authServices.refresh({refreshToken})
-    console.log(userMsg)
     res.json({ message: "Token refreshed successfully", data: userMsg });
   };
 
+const logout = async(req: Request, res:Response) => {
+  const { refreshToken } = req.body;
+    const logoutMsg = await authServices.logout({refreshToken})
+  res.json({ message: logoutMsg });
+};
+
  
-export default { register, login, refresh }
+export default { register, login, refresh, logout }
