@@ -1,14 +1,11 @@
 import User  from "../models/userSchema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
 import generateTokens from "../utils/generateTokens";
-import passport from "passport";
 import dotenv from 'dotenv';
 dotenv.config();
 
-
-const SECRET:string = process.env.JWT_SECRET!;
+const REFRESH_SECRET:string = process.env.REFRESH_SECRET!;
 
 interface RegisterProps {
     username: string;
@@ -19,24 +16,30 @@ interface LoginProps {
     email: string;
     password: string;
 }
+
 const register = async ({username, email, password}:RegisterProps)  => {
     try {
+      const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return 'User already exists'
+    }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const refreshToken = crypto.randomBytes(64).toString('hex');
-        const user = new User({username, email, password: hashedPassword, refreshToken});
+        const user = new User({username, email, password: hashedPassword});
         user.save()
-        generateTokens.generateAccessToken(user.id);
-        user.save()
+        if(user){
+          await User.findByIdAndUpdate(user.id, {refreshToken: generateTokens.generateRefreshToken(user.id)})
+          user.save()
+        }
         return "Registered successfully";
       } catch (e:any) {
-        console.log(e.message);
+        return e.message;
        
       }  
 }
 
 const login = async ({email, password}:LoginProps)  => {
     try {
-        const user = await User.findOne({email: email})
+        const user = await User.findOne({email})
         if (!user) {
             return "User not found"
           }
@@ -45,11 +48,32 @@ const login = async ({email, password}:LoginProps)  => {
             return  "Invalid username or password"
           }
           const token = generateTokens.generateAccessToken(user.id);
-            return {user, token}
-      } catch (e:any) {
-        console.log(e.message);
+          await User.findByIdAndUpdate(user.id, {refreshToken: generateTokens.generateRefreshToken(user.id)})
+          user.save()
+          return {user, token}
+      } catch (error:any) {
+        return error.message;
        
       }  
 }
 
-export default { register, login }
+const refresh = async({refreshToken}:any) => {
+  try {
+      const user =  await User.findOne({refreshToken});
+      if (!user) {
+        return  "Invalid refresh token";
+      }
+      jwt.verify(refreshToken, REFRESH_SECRET, (err:any, user:any) => {
+        if (!err) {
+            const accessToken = generateTokens.generateAccessToken(user.id);
+            return accessToken;
+        } else {
+            return "Invalid refresh token"  
+        }
+    });
+  } catch (error:any) {
+      return error.message;
+  }
+}
+
+export default { register, login, refresh }

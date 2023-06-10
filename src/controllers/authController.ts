@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
 import authServices from '../services/authServices'
 
-const register = (req: Request, res: Response) => {
+const register = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
-    const userMsg = authServices.register({ username, email, password })
-    res.status(201)
-    .json({ message: userMsg});
+    const userMsg = await authServices.register({ username, email, password })
+    res.json({ data: userMsg});
 }
 
 const login = async (req: Request, res: Response) => {
@@ -14,4 +13,12 @@ const login = async (req: Request, res: Response) => {
     res.json({ message: "Logged in successfully", data: userMsg });
 }
 
-export default { register, login }
+const refresh = async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+    const userMsg = await authServices.refresh({refreshToken})
+    console.log(userMsg)
+    res.json({ message: "Token refreshed successfully", data: userMsg });
+  };
+
+ 
+export default { register, login, refresh }
