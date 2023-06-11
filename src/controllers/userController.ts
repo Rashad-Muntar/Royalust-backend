@@ -11,4 +11,9 @@ const getUser = async (req: Request, res: Response) => {
       res.send({ status: "OK", data: user });
 }
 
-export default { getUser }
+const getUsers = async (req: Request, res: Response) => {
+    const users = await userServices.getUsers();
+    res.send({ status: "OK", data: users });
+}
+
+export default { getUser, getUsers }

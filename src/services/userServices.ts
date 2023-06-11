@@ -18,4 +18,10 @@ const getUser = async ({id}:GetUserProps)  => {
       }  
 }
 
-export default { getUser }
+const getUsers = async() => {
+  const users = await User.find();
+  return users;
+}
+
+
+export default { getUser, getUsers }

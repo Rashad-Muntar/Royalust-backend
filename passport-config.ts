@@ -9,16 +9,14 @@ const opts = {
   };
 
 const jwtStrategy = new Strategy(opts, (jwtPayload, done) => {
-    User.findOne({ id: jwtPayload.id }, (err: any, user: any) => {
-      if (err) {
-        return done(err, false);
-      }
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false);
-      }
-    });
+  try {
+    const user = User.findOne({ id: jwtPayload.id })
+    return done(null, user);
+  } catch (error) {
+    return done(error, false);
+  }
+    
   });
   
   export default jwtStrategy;
+

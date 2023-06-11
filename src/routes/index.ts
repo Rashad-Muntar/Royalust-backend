@@ -10,7 +10,8 @@ router.post('/register',  authController.register);
 router.post('/login', authController.login);
 router.post('/refresh', authController.refresh);
 router.post('/logout', authController.logout);
-router.get('/getUser/:id', passport.authenticate('jwt', {session: false}), userController.getUser);
+router.get('/user/:id', passport.authenticate('jwt', {session: false}), userController.getUser);
+router.get('/getUsers', userController.getUsers);
 
 
 export default router;

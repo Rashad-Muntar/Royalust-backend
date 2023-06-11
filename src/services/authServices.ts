@@ -50,7 +50,8 @@ const login = async ({email, password}:LoginProps)  => {
           const token = generateTokens.generateAccessToken(user.id);
           await User.findByIdAndUpdate(user.id, {refreshToken: generateTokens.generateRefreshToken(user.id)})
           user.save()
-          return {user, token}
+          const returnToken = `Bearer ${token}`
+          return {user, returnToken}
       } catch (error:any) {
         return error.message;
        
@@ -86,5 +87,6 @@ const logout = async({refreshToken}:any) => {
   await User.findByIdAndUpdate(user.id, {refreshToken: null})
   return "User logged out successfully"
 }
+
 
 export default { register, login, refresh, logout }
