@@ -50,8 +50,8 @@ const login = async ({email, password}:LoginProps)  => {
           const token = generateTokens.generateAccessToken(user.id);
           await User.findByIdAndUpdate(user.id, {refreshToken: generateTokens.generateRefreshToken(user.id)})
           user.save()
-          const returnToken = `Bearer ${token}`
-          return {user, returnToken}
+          const accessToken = `Bearer ${token}`
+          return {user, accessToken}
       } catch (error:any) {
         return error.message;
        

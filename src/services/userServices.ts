@@ -13,8 +13,7 @@ const getUser = async ({id}:GetUserProps)  => {
           }
           return {user};
       } catch (e:any) {
-        console.log(e.message);
-       
+        return e.message;
       }  
 }
 
