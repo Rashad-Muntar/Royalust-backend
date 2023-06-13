@@ -25,7 +25,7 @@ const start = async () => {
         app.listen(port, () => {
         console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
         });
-    } catch (error) {
+    } catch (error:any) {
         return error.message;
     }
 }
