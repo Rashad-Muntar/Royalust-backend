@@ -30,7 +30,7 @@ _Base URL_: `http://localhost:4000/api`
 |:---|:---|:---|
 |Sign up to create an account|POST|`/register`|
 |Log in to created account|POST|`/login`|
-|Log out if logged in|POST|`/logout`|
+|Log out if logged in|DELETE|`/logout`|
 |Fetch current user|GET|`/user/:id`|
 |Fetch users list |GET|`/getUsers`|
 |Refresh access token |POST|`/refresh`|
