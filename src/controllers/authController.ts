@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import authServices from '../services/authServices'
+import User from '../models/userSchema';
 
 const register = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
@@ -10,20 +11,20 @@ const register = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const userMsg = await authServices.login({email, password})
-    res.json({ message: "Logged in successfully", data: userMsg });
+    res.json({ data: userMsg });
 }
 
-const refresh = async (req: Request, res: Response) => {
-    const { refreshToken } = req.body;
-    const userMsg = await authServices.refresh({refreshToken})
-    res.json({ message: "Token refreshed successfully", data: userMsg });
-  };
+const refreshUserToken = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const userMsg = await authServices.refresh({email})
+  res.json({ data: userMsg });
+}
 
 const logout = async(req: Request, res:Response) => {
-  const { refreshToken } = req.body;
-    const logoutMsg = await authServices.logout({refreshToken})
+  const { email } = req.body;
+    const logoutMsg = await authServices.logout({email})
   res.json({ message: logoutMsg });
 };
 
  
-export default { register, login, refresh, logout }
+export default { register, login, refreshUserToken, logout }
